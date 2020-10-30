@@ -1,15 +1,13 @@
 package com.example.todo.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Getter
 @Setter

@@ -1,29 +1,28 @@
 package com.example.todo.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.annotation.Id;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
-@AllArgsConstructor
 @MappedSuperclass
 @EqualsAndHashCode
 @Data
 public class AbstractEntity {
 
     @Id
+    @JsonIgnore
+    @Column(name = "ID", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    public AbstractEntity(){
+    AbstractEntity() {
         this.id = null;
     }
 
-    public AbstractEntity(long id){
+    AbstractEntity(Integer id) {
         this.id = id;
     }
 
