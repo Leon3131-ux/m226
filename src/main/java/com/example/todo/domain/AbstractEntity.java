@@ -1,6 +1,5 @@
 package com.example.todo.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,7 +11,6 @@ import javax.persistence.*;
 public class AbstractEntity {
 
     @Id
-    @JsonIgnore
     @Column(name = "ID", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
