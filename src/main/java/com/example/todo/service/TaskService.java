@@ -1,6 +1,7 @@
 package com.example.todo.service;
 
 import com.example.todo.domain.Task;
+import com.example.todo.domain.User;
 import com.example.todo.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,5 +16,9 @@ public class TaskService {
 
     public List<Task> getAllTasks(){
         return taskRepository.findAll();
+    }
+
+    public List<Task> getAllTasksByUser(User user){
+        return taskRepository.findAllByUser(user);
     }
 }
