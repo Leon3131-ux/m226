@@ -13,13 +13,13 @@ public class AbstractEntity {
     @Id
     @Column(name = "ID", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     AbstractEntity() {
         this.id = null;
     }
 
-    AbstractEntity(Integer id) {
+    AbstractEntity(Long id) {
         this.id = id;
     }
 
