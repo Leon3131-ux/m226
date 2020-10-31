@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -28,5 +30,11 @@ public class TaskController {
     public ResponseEntity getTasksByUser(Principal principal){
         User user = userService.getUserOrThrowException(principal.getName());
         return new ResponseEntity(taskService.getAllTasksByUser(user).stream().map(taskConverter::toDto).collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/api/saveTask", method = RequestMethod.POST)
+    public ResponseEntity saveTask(Principal principal, @RequestBody @Validated TaskDto taskDto){
+        User user = userService.getUserOrThrowException(principal.getName());
+
     }
 }
