@@ -16,7 +16,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,38 +34,38 @@ public class TaskController {
     }
 
     @RequestMapping(value = "/api/getTasks", method = RequestMethod.GET)
-    public ResponseEntity getTasksByUser(Principal principal){
+    public ResponseEntity<Object> getTasksByUser(Principal principal){
         User user = userService.getUserOrThrowException(principal.getName());
-        return new ResponseEntity(taskService.getAllTasksByUser(user).stream().map(taskConverter::toDto).collect(Collectors.toList()), HttpStatus.OK);
+        return new ResponseEntity<>(taskService.getAllTasksByUser(user).stream().map(taskConverter::toDto).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/api/saveTask", method = RequestMethod.POST)
-    public ResponseEntity saveTask(Principal principal, @RequestBody @Validated TaskDto taskDto){
+    public ResponseEntity<Object> saveTask(Principal principal, @RequestBody @Validated TaskDto taskDto){
         User user = userService.getUserOrThrowException(principal.getName());
         if(taskDto.getId() == 0 || taskDto.getId() == null){
             Task task = taskConverter.toEntity(taskDto, user);
-            return new ResponseEntity(taskConverter.toDto(taskService.saveTask(task)), HttpStatus.CREATED);
+            return new ResponseEntity<>(taskConverter.toDto(taskService.saveTask(task)), HttpStatus.CREATED);
         }else {
             Optional<Task> oldTask = taskService.getTaskById(taskDto.getId());
             if(oldTask.isPresent()){
-                return new ResponseEntity(taskConverter.toDto(taskService.updateTask(oldTask.get(), taskDto)), HttpStatus.OK);
+                return new ResponseEntity<>(taskConverter.toDto(taskService.updateTask(oldTask.get(), taskDto)), HttpStatus.OK);
             }
         }
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(value = "/api/deleteTask/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteTask(Principal principal, @PathVariable("id") Task task){
+    public ResponseEntity<Object> deleteTask(Principal principal, @PathVariable("id") Task task){
         User user = userService.getUserOrThrowException(principal.getName());
         if (task.getUser().equals(user)) {
             if (task.isDeleted()) {
                 taskService.deleteTask(task);
-                return new ResponseEntity(HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 task.setDeleted(true);
-                return new ResponseEntity(taskConverter.toDto(taskService.saveTask(task)), HttpStatus.OK);
+                return new ResponseEntity<>(taskConverter.toDto(taskService.saveTask(task)), HttpStatus.OK);
             }
         }
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }
