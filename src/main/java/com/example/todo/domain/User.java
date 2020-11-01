@@ -1,9 +1,6 @@
 package com.example.todo.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +10,7 @@ import javax.persistence.MappedSuperclass;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class User extends AbstractEntity {
 
     @Column(nullable = false)
