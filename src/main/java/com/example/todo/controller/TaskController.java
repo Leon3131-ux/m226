@@ -1,21 +1,26 @@
 package com.example.todo.controller;
 
 import com.example.todo.converter.TaskConverter;
+import com.example.todo.domain.Task;
 import com.example.todo.domain.TaskDto;
 import com.example.todo.domain.User;
 import com.example.todo.service.TaskService;
 import com.example.todo.service.UserService;
+import com.example.todo.validator.TaskValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -25,6 +30,12 @@ public class TaskController {
     private final TaskService taskService;
     private final TaskConverter taskConverter;
     private final UserService userService;
+    private final TaskValidator taskValidator;
+
+    @InitBinder("taskDto")
+    public void initSaveProductBinder(WebDataBinder binder) {
+        binder.setValidator(taskValidator);
+    }
 
     @RequestMapping(value = "/api/getTasks", method = RequestMethod.GET)
     public ResponseEntity getTasksByUser(Principal principal){
@@ -35,6 +46,15 @@ public class TaskController {
     @RequestMapping(value = "/api/saveTask", method = RequestMethod.POST)
     public ResponseEntity saveTask(Principal principal, @RequestBody @Validated TaskDto taskDto){
         User user = userService.getUserOrThrowException(principal.getName());
-
+        if(taskDto.getId() == 0 || taskDto.getId() == null){
+            Task task = taskConverter.toEntity(taskDto, user);
+            return new ResponseEntity(taskConverter.toDto(taskService.saveTask(task)), HttpStatus.CREATED);
+        }else {
+            Optional<Task> oldTask = taskService.getTaskById(taskDto.getId());
+            if(oldTask.isPresent()){
+                return new ResponseEntity(taskConverter.toDto(taskService.updateTask(oldTask.get(), taskDto)), HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 }
