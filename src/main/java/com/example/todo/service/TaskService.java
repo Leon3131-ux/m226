@@ -36,4 +36,8 @@ public class TaskService {
         task.setDeleted(taskDto.isDeleted());
         return taskRepository.save(task);
     }
+
+    public void deleteTask(Task task) {
+        taskRepository.delete(task);
+    }
 }

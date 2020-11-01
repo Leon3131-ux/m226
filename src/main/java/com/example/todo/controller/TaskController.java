@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -53,6 +50,21 @@ public class TaskController {
             Optional<Task> oldTask = taskService.getTaskById(taskDto.getId());
             if(oldTask.isPresent()){
                 return new ResponseEntity(taskConverter.toDto(taskService.updateTask(oldTask.get(), taskDto)), HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
+
+    @RequestMapping(value = "/api/deleteTask/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteTask(Principal principal, @PathVariable("id") Task task){
+        User user = userService.getUserOrThrowException(principal.getName());
+        if (task.getUser().equals(user)) {
+            if (task.isDeleted()) {
+                taskService.deleteTask(task);
+                return new ResponseEntity(HttpStatus.OK);
+            } else {
+                task.setDeleted(true);
+                return new ResponseEntity(taskConverter.toDto(taskService.saveTask(task)), HttpStatus.OK);
             }
         }
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
