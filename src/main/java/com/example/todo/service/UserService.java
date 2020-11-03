@@ -23,4 +23,8 @@ public class UserService {
         return userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    public User saveUser(User user){
+        return userRepository.save(user);
+    }
+
 }

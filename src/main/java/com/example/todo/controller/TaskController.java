@@ -19,7 +19,7 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class TaskController {
 
@@ -42,7 +42,7 @@ public class TaskController {
     @RequestMapping(value = "/api/saveTask", method = RequestMethod.POST)
     public ResponseEntity<Object> saveTask(Principal principal, @RequestBody @Validated TaskDto taskDto){
         User user = userService.getUserOrThrowException(principal.getName());
-        if(taskDto.getId() == 0 || taskDto.getId() == null){
+        if(taskDto.getId() == null || taskDto.getId() == 0){
             Task task = taskConverter.toEntity(taskDto, user);
             return new ResponseEntity<>(taskConverter.toDto(taskService.saveTask(task)), HttpStatus.CREATED);
         }else {

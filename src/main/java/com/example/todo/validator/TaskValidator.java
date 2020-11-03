@@ -28,7 +28,7 @@ public class TaskValidator implements Validator {
     public void validate(Object target, Errors errors) {
         TaskDto taskDto = (TaskDto) target;
 
-        if(taskDto.getId() != 0 || taskDto.getId() != null){
+        if(taskDto.getId() != null && taskDto.getId() != 0){
             Optional<Task> oldTask = taskService.getTaskById(taskDto.getId());
             if(oldTask.isPresent()){
                 Optional<User> currentUser = userService.getCurrentUser();
