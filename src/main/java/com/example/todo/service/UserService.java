@@ -1,6 +1,7 @@
 package com.example.todo.service;
 
 import com.example.todo.domain.User;
+import com.example.todo.exception.CustomUsernameNotFoundException;
 import com.example.todo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User getUserOrThrowException(String username){
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        return userRepository.findByUsername(username).orElseThrow(() -> new CustomUsernameNotFoundException(username));
     }
 
     public Optional<User> getCurrentUser(){
