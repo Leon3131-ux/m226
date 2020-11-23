@@ -44,10 +44,10 @@ public class TaskValidator implements Validator {
             }
         }
 
-        if(taskDto.getTitle().isBlank() || taskDto.getTitle().isEmpty()){
+        if(taskDto.getTitle() == null || taskDto.getTitle().isBlank()){
             errors.reject("errors.task.title.required");
         }
-        if(taskDto.getDescription().isBlank() || taskDto.getDescription().isEmpty()){
+        if(taskDto.getDescription() == null || taskDto.getDescription().isBlank()){
             errors.reject("errors.task.description.required");
         }
         if(taskDto.getDate() == null){
