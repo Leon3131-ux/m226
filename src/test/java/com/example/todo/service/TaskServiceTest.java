@@ -29,7 +29,7 @@ public class TaskServiceTest {
     private TaskRepository taskRepository;
 
     @BeforeEach
-    void initializeServiceMock(){
+    public void initializeServiceMock(){
         when(taskRepository.save(any(Task.class))).then(returnsFirstArg());
     }
 
