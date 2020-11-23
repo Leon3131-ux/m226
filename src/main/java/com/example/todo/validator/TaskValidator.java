@@ -33,11 +33,12 @@ public class TaskValidator implements Validator {
             if(oldTask.isPresent()){
                 Optional<User> currentUser = userService.getCurrentUser();
                 if(currentUser.isPresent()){
-                    if(!oldTask.get().getUser().equals(currentUser.get())){
+                    if(oldTask.get().getUser() != (currentUser.get())){
                         errors.reject("errors.task.id.invalid");
                     }
+                }else {
+                    errors.reject("errors.task.id.invalid");
                 }
-
             }else {
                 errors.reject("errors.task.id.invalid");
             }
