@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TaskValidatorTest {
+public class TaskValidatorTestUT {
 
     @InjectMocks
     private TaskValidator taskValidator;
