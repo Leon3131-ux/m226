@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,11 +48,11 @@ public class TaskValidatorUT {
         when(taskService.getTaskById(any(Long.class))).thenReturn(Optional.empty());
     }
 
-    public void initializeTaskServiceMockReturnTask(Task task){
+    public void taskServiceMockGetByIdReturn(Task task){
         when(taskService.getTaskById(any(Long.class))).thenReturn(Optional.of(task));
     }
 
-    public void initializeUserServiceMockReturnUser(User user){
+    public void userServiceMockGetCurrentUserReturn(User user){
         when(userService.getCurrentUser()).thenReturn(Optional.of(user));
     }
 
@@ -64,8 +65,8 @@ public class TaskValidatorUT {
         Task task = taskDataProvider.createDefaultTask();
         Errors errors = new BeanPropertyBindingResult(taskDto, "taskDto");
         validationFieldErrorAsserter = new ValidationFieldErrorAsserter(taskValidator, errors);
-        initializeTaskServiceMockReturnTask(task);
-        initializeUserServiceMockReturnUser(task.getUser());
+        taskServiceMockGetByIdReturn(task);
+        userServiceMockGetCurrentUserReturn(task.getUser());
     }
 
     @Test
@@ -77,8 +78,9 @@ public class TaskValidatorUT {
 
     @Test
     public void testValidatorUserMismatchError(){
-        initializeTaskServiceMockReturnTask(taskDataProvider.createDefaultTask());
-        initializeUserServiceMockReturnUser(userDataProvider.createDefaultUser());
+        Task task = new Task("oldTask", "oldTask", false, new Date(), false, new User("taskUser", "taskUser"));
+        taskServiceMockGetByIdReturn(task);
+        userServiceMockGetCurrentUserReturn(new User("mismatchedUser", "mismatchedUser"));
 
         validationFieldErrorAsserter.assertFieldHasError(taskDto, "id", "errors.task.id.invalid");
     }
