@@ -37,8 +37,6 @@ public class TaskValidatorTestUT {
 
     private TaskDataProvider taskDataProvider;
 
-    private TaskDtoDataProvider taskDtoDataProvider;
-
     private UserDataProvider userDataProvider;
 
     private ValidationFieldErrorAsserter validationFieldErrorAsserter;
@@ -61,7 +59,7 @@ public class TaskValidatorTestUT {
     public void setup(){
         userDataProvider = new UserDataProvider();
         taskDataProvider = new TaskDataProvider(userDataProvider);
-        taskDtoDataProvider = new TaskDtoDataProvider();
+        TaskDtoDataProvider taskDtoDataProvider = new TaskDtoDataProvider();
         taskDto = taskDtoDataProvider.createDefaultTaskDto();
         Task task = taskDataProvider.createDefaultTask();
         Errors errors = new BeanPropertyBindingResult(taskDto, "taskDto");
