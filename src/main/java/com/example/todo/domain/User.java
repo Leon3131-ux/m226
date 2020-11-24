@@ -12,7 +12,7 @@ import javax.persistence.Entity;
 @Getter
 public class User extends AbstractEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
