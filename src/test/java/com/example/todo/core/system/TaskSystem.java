@@ -1,7 +1,5 @@
 package com.example.todo.core.system;
 
-import com.example.todo.core.dataProvider.TaskDataProvider;
-import com.example.todo.core.dataProvider.UserDataProvider;
 import com.example.todo.domain.Task;
 import com.example.todo.domain.User;
 import com.example.todo.repository.TaskRepository;
