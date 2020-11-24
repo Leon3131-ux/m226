@@ -63,8 +63,11 @@ public class TaskValidatorTest {
         taskDataProvider = new TaskDataProvider(userDataProvider);
         taskDtoDataProvider = new TaskDtoDataProvider();
         taskDto = taskDtoDataProvider.createDefaultTaskDto();
+        Task task = taskDataProvider.createDefaultTask();
         Errors errors = new BeanPropertyBindingResult(taskDto, "taskDto");
         validationFieldErrorAsserter = new ValidationFieldErrorAsserter(taskValidator, errors);
+        initializeTaskServiceMockReturnTask(task);
+        initializeUserServiceMockReturnUser(task.getUser());
     }
 
     @Test
@@ -122,6 +125,13 @@ public class TaskValidatorTest {
         taskDto.setDescription(null);
 
         validationFieldErrorAsserter.assertFieldHasError(taskDto, "description", "errors.task.description.required");
+    }
+
+    @Test
+    public void testValidatorDateNullError(){
+        taskDto.setDate(null);
+
+        validationFieldErrorAsserter.assertFieldHasError(taskDto, "date", "errors.task.date.required");
     }
 
 }
