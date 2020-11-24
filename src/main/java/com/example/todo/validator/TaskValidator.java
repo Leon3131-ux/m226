@@ -34,24 +34,24 @@ public class TaskValidator implements Validator {
                 Optional<User> currentUser = userService.getCurrentUser();
                 if(currentUser.isPresent()){
                     if(oldTask.get().getUser() != (currentUser.get())){
-                        errors.reject("errors.task.id.invalid");
+                        errors.rejectValue("id", "errors.task.id.invalid");
                     }
                 }else {
-                    errors.reject("errors.task.id.invalid");
+                    errors.rejectValue("id", "errors.task.id.invalid");
                 }
             }else {
-                errors.reject("errors.task.id.invalid");
+                errors.rejectValue("id", "errors.task.id.invalid");
             }
         }
 
         if(taskDto.getTitle() == null || taskDto.getTitle().isBlank()){
-            errors.reject("errors.task.title.required");
+            errors.rejectValue("title", "errors.task.title.required");
         }
         if(taskDto.getDescription() == null || taskDto.getDescription().isBlank()){
-            errors.reject("errors.task.description.required");
+            errors.rejectValue("description", "errors.task.description.required");
         }
         if(taskDto.getDate() == null){
-            errors.reject("errors.task.date.required");
+            errors.rejectValue("date", "errors.task.date.required");
         }
     }
 }

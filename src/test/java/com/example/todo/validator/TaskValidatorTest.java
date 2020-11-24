@@ -71,7 +71,7 @@ public class TaskValidatorTest {
     public void testValidatorIdError(){
         initializeTaskServiceMockReturnEmpty();
 
-        validationFieldErrorAsserter.assertFieldHasError(taskDto, "ID", "errors.task.id.invalid");
+        validationFieldErrorAsserter.assertFieldHasError(taskDto, "id", "errors.task.id.invalid");
     }
 
     @Test
@@ -79,7 +79,7 @@ public class TaskValidatorTest {
         initializeTaskServiceMockReturnTask(taskDataProvider.createDefaultTask());
         initializeUserServiceMockReturnUser(userDataProvider.createDefaultUser());
 
-        validationFieldErrorAsserter.assertFieldHasError(taskDto, "ID", "errors.task.id.invalid");
+        validationFieldErrorAsserter.assertFieldHasError(taskDto, "id", "errors.task.id.invalid");
     }
 
     @Test
@@ -112,14 +112,14 @@ public class TaskValidatorTest {
 
     @Test
     public void testValidatorDescriptionSpaceError(){
-        taskDto.setTitle("      ");
+        taskDto.setDescription("      ");
 
         validationFieldErrorAsserter.assertFieldHasError(taskDto, "description", "errors.task.description.required");
     }
 
     @Test
     public void testValidatorDescriptionNullError(){
-        taskDto.setTitle(null);
+        taskDto.setDescription(null);
 
         validationFieldErrorAsserter.assertFieldHasError(taskDto, "description", "errors.task.description.required");
     }
