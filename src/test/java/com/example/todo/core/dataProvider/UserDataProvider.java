@@ -1,4 +1,4 @@
-package com.example.todo.util.dataProvider;
+package com.example.todo.core.dataProvider;
 
 import com.example.todo.domain.User;
 

@@ -1,4 +1,4 @@
-package com.example.todo.util;
+package com.example.todo.core.util;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
