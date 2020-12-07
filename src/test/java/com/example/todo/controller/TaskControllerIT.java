@@ -49,15 +49,15 @@ public class TaskControllerIT {
     public void getAllTasks() throws Exception {
         User user1 = userSystem.createUserWithCredentialsInDb("user1", "test");
         User user2 = userSystem.createUserWithCredentialsInDb("user2", "test");
-        Task task1 = taskSystem.createTaskInDb("user1Task", "1. user1 task", false, false, new Date(), user1);
-        Task task2 = taskSystem.createTaskInDb("user1Task", "2. user1 task", false, false, new Date(), user1);
+        Task user1task1 = taskSystem.createTaskInDb("user1Task", "1. user1 task", false, false, new Date(), user1);
+        Task user1task2 = taskSystem.createTaskInDb("user1Task", "2. user1 task", false, false, new Date(), user1);
         taskSystem.createTaskInDb("user2Task", "1. user2 task", false, false, new Date(), user2);
 
         MvcResult result = mockMvc.perform(get("/api/getTasks")).andExpect(status().isOk()).andReturn();
 
         List<TaskDto> taskDtos = MvcUtils.convertList(result, TaskDto.class);
 
-        assertThat(taskDtos).extracting(TaskDto::getId).containsOnly(task1.getId(), task2.getId());
+        assertThat(taskDtos).extracting(TaskDto::getId).containsOnly(user1task1.getId(), user1task2.getId());
     }
 
     @Test
@@ -133,15 +133,26 @@ public class TaskControllerIT {
     @Test
     @WithMockUser("user5")
     public void hardDeleteTask() throws Exception {
+        List<TaskDto> taskDtos;
+        MvcResult result;
+
         User user5 = userSystem.createUserWithCredentialsInDb("user5", "test");
         Task task = taskSystem.createTaskInDb("user5task", "1. user5 task", false, false, new Date(), user5);
 
         mockMvc.perform(delete("/api/deleteTask/" + task.getId())).andExpect(status().isOk());
+
+        result = mockMvc.perform(get("/api/getTasks")).andExpect(status().isOk()).andReturn();
+
+        taskDtos = MvcUtils.convertList(result, TaskDto.class);
+
+        assertThat(taskDtos).hasSize(1);
+        assertThat(taskDtos).extracting(TaskDto::isDeleted).containsOnly(true);
+
         mockMvc.perform(delete("/api/deleteTask/" + task.getId())).andExpect(status().isOk());
 
-        MvcResult result = mockMvc.perform(get("/api/getTasks")).andExpect(status().isOk()).andReturn();
+        result = mockMvc.perform(get("/api/getTasks")).andExpect(status().isOk()).andReturn();
 
-        List<TaskDto> taskDtos = MvcUtils.convertList(result, TaskDto.class);
+        taskDtos = MvcUtils.convertList(result, TaskDto.class);
 
         assertThat(taskDtos).hasSize(0);
     }
