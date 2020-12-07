@@ -1,10 +1,16 @@
 package com.example.todo.core.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 
 public class MvcUtils {
 
@@ -20,19 +26,19 @@ public class MvcUtils {
         return objectMapper.readValue(contentAsString, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
     }
 
-    public static void checkReturnedErrors(MvcResult result, String... messageArray) throws IOException {
-        List<String> messages = Arrays.asList(messageArray);
-        JsonValidationErrors jsonValidationErrors = MvcUtils.convertObject(result, JsonValidationErrors.class);
+    public static void checkReturnedErrors(MvcResult result, String... errors) throws IOException {
+        List<String> errorMessages = Arrays.asList(errors);
+        List<String> resultErrorMessages = JsonPath.read(result.getResponse().getContentAsString(), "validationErrors");
 
-        assertEquals(messages.size(), jsonValidationErrors.getErrors().size());
+        assertEquals(resultErrorMessages.size(), errorMessages.size());
 
-        for(ValidationError validationError : jsonValidationErrors.getErrors()){
-            List<String> locatedMessages = messages.stream()
-                    .filter(message -> validationError.getValue().equals(message))
+        for(String errorMessage : errorMessages){
+            List<String> locatedMessages = resultErrorMessages.stream()
+                    .filter(errorMessage::equals)
                     .collect(Collectors.toList());
 
-            Assert.assertFalse(locatedMessages.isEmpty());
-            Assert.assertFalse(locatedMessages.size() > 1);
+            assertFalse(locatedMessages.isEmpty());
+            assertFalse(locatedMessages.size() > 1);
         }
     }
 

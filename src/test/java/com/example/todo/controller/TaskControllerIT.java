@@ -110,7 +110,7 @@ public class TaskControllerIT {
 
         MvcUtils.checkReturnedErrors(
                 result,
-                messageSourceProvider.getMessage("validate.emptyName")
+                "errors.task.title.required"
         );
     }
     

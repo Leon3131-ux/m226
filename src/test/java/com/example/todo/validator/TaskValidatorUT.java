@@ -36,10 +36,6 @@ public class TaskValidatorUT {
     @Mock
     private UserService userService;
 
-    private TaskDataProvider taskDataProvider;
-
-    private UserDataProvider userDataProvider;
-
     private ValidationFieldErrorAsserter validationFieldErrorAsserter;
 
     private TaskDto taskDto;
@@ -57,9 +53,9 @@ public class TaskValidatorUT {
     }
 
     @Before
-    public void setup(){
-        userDataProvider = new UserDataProvider();
-        taskDataProvider = new TaskDataProvider(userDataProvider);
+    public void setupWithNoErrors(){
+        UserDataProvider userDataProvider = new UserDataProvider();
+        TaskDataProvider taskDataProvider = new TaskDataProvider(userDataProvider);
         TaskDtoDataProvider taskDtoDataProvider = new TaskDtoDataProvider();
         taskDto = taskDtoDataProvider.createDefaultTaskDto();
         Task task = taskDataProvider.createDefaultTask();
