@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,7 +46,7 @@ public class TaskControllerIT {
 
     @Test
     @WithMockUser("user1")
-    public void getAllTasksBelongToCorrectUser() throws Exception {
+    public void getAllTasks() throws Exception {
         User user1 = userSystem.createUserWithCredentialsInDb("user1", "test");
         User user2 = userSystem.createUserWithCredentialsInDb("user2", "test");
         Task task1 = taskSystem.createTaskInDb("user1Task", "1. user1 task", false, false, new Date(), user1);
@@ -63,9 +62,9 @@ public class TaskControllerIT {
 
     @Test
     @WithMockUser("user3")
-    public void createTaskBelongToCorrectUser() throws Exception {
-        User user3 = userSystem.createUserWithCredentialsInDb("user3", "test");
-        TaskDto taskDto = new TaskDto(null, "user3Task", "1. user 3 task", false, new Date(), false);
+    public void createValidTask() throws Exception {
+        userSystem.createUserWithCredentialsInDb("user3", "test");
+        TaskDto taskDto = new TaskDto(null, "user3Task", "1. user3 task", false, new Date(), false);
         String taskDtoString = new ObjectMapper().writeValueAsString(taskDto);
 
         mockMvc.perform(post("/api/saveTask").contentType(MediaType.APPLICATION_JSON)
@@ -77,6 +76,74 @@ public class TaskControllerIT {
 
         assertThat(taskDtos).hasSize(1);
         assertThat(taskDtos).extracting(TaskDto::getTitle).containsOnly(taskDto.getTitle());
+    }
+
+    @Test
+    @WithMockUser("user6")
+    public void updateValidTask() throws Exception {
+        User user6 = userSystem.createUserWithCredentialsInDb("user6", "test");
+        Task task = taskSystem.createTaskInDb("user6task", "1. user6 task", false, false, new Date(), user6);
+
+        TaskDto taskDto = new TaskDto(task.getId(), "user6Task", "updated user6 task", false, new Date(), false);
+        String taskDtoString = new ObjectMapper().writeValueAsString(taskDto);
+
+        mockMvc.perform(post("/api/saveTask").contentType(MediaType.APPLICATION_JSON)
+                .content(taskDtoString)).andExpect(status().isOk());
+
+        MvcResult result = mockMvc.perform(get("/api/getTasks")).andExpect(status().isOk()).andReturn();
+
+        List<TaskDto> taskDtos = MvcUtils.convertList(result, TaskDto.class);
+
+        assertThat(taskDtos).hasSize(1);
+        assertThat(taskDtos).extracting(TaskDto::getDescription).containsOnly(taskDto.getDescription());
+    }
+
+    @Test
+    @WithMockUser("user7")
+    public void createInvalidTask() throws Exception {
+        userSystem.createUserWithCredentialsInDb("user7", "test");
+        TaskDto taskDto = new TaskDto(null, null, "1. user7 task", false, new Date(), false);
+        String taskDtoString = new ObjectMapper().writeValueAsString(taskDto);
+
+        MvcResult result = mockMvc.perform(post("/api/saveTask").contentType(MediaType.APPLICATION_JSON)
+                .content(taskDtoString)).andExpect(status().isBadRequest()).andReturn();
+
+        MvcUtils.checkReturnedErrors(
+                result,
+                messageSourceProvider.getMessage("validate.emptyName")
+        );
+    }
+    
+    @Test
+    @WithMockUser("user4")
+    public void softDeleteTask() throws Exception {
+        User user4 = userSystem.createUserWithCredentialsInDb("user4", "test");
+        Task task = taskSystem.createTaskInDb("user4task", "1. user4 task", false, false, new Date(), user4);
+
+        mockMvc.perform(delete("/api/deleteTask/" + task.getId())).andExpect(status().isOk());
+
+        MvcResult result = mockMvc.perform(get("/api/getTasks")).andExpect(status().isOk()).andReturn();
+
+        List<TaskDto> taskDtos = MvcUtils.convertList(result, TaskDto.class);
+
+        assertThat(taskDtos).hasSize(1);
+        assertThat(taskDtos).extracting(TaskDto::isDeleted).containsOnly(true);
+    }
+
+    @Test
+    @WithMockUser("user5")
+    public void hardDeleteTask() throws Exception {
+        User user5 = userSystem.createUserWithCredentialsInDb("user5", "test");
+        Task task = taskSystem.createTaskInDb("user5task", "1. user5 task", false, false, new Date(), user5);
+
+        mockMvc.perform(delete("/api/deleteTask/" + task.getId())).andExpect(status().isOk());
+        mockMvc.perform(delete("/api/deleteTask/" + task.getId())).andExpect(status().isOk());
+
+        MvcResult result = mockMvc.perform(get("/api/getTasks")).andExpect(status().isOk()).andReturn();
+
+        List<TaskDto> taskDtos = MvcUtils.convertList(result, TaskDto.class);
+
+        assertThat(taskDtos).hasSize(0);
     }
 
 

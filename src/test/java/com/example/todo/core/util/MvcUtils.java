@@ -20,4 +20,20 @@ public class MvcUtils {
         return objectMapper.readValue(contentAsString, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
     }
 
+    public static void checkReturnedErrors(MvcResult result, String... messageArray) throws IOException {
+        List<String> messages = Arrays.asList(messageArray);
+        JsonValidationErrors jsonValidationErrors = MvcUtils.convertObject(result, JsonValidationErrors.class);
+
+        assertEquals(messages.size(), jsonValidationErrors.getErrors().size());
+
+        for(ValidationError validationError : jsonValidationErrors.getErrors()){
+            List<String> locatedMessages = messages.stream()
+                    .filter(message -> validationError.getValue().equals(message))
+                    .collect(Collectors.toList());
+
+            Assert.assertFalse(locatedMessages.isEmpty());
+            Assert.assertFalse(locatedMessages.size() > 1);
+        }
+    }
+
 }
